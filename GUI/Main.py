@@ -1,5 +1,7 @@
 import sys
+from functions import encodeData
 from PyQt5.QtWidgets import QLabel, QLineEdit, QFormLayout, QPushButton, QWidget
+import PyQt5.QtCore
 
 class Main(QWidget) :
     
@@ -11,6 +13,7 @@ class Main(QWidget) :
         self.encodeInputLabel()
         self.encodeInput()
         self.encodeSubmitButton()
+        
         self.decodeInputLabel()
         self.decodeInput()
         self.decodeSubmitButton()
@@ -18,33 +21,39 @@ class Main(QWidget) :
         self.show()
         
     def encodeInput(self):
-        encodeInput = QLineEdit()
-        encodeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px;')
-        self.mainLayout.addWidget(encodeInput)
+        self.encodeInput = QLineEdit()
+        self.encodeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px;')
+        self.mainLayout.addWidget(self.encodeInput)
 
     def decodeInput(self):
-        decodeInput = QLineEdit()
-        decodeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px;')
-        self.mainLayout.addWidget(decodeInput)
+        self.decodeInput = QLineEdit()
+        self.decodeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px;')
+        self.mainLayout.addWidget(self.decodeInput)
     
     def decodeInputLabel(self):
-        decodeInputLabel = QLabel('Insert your data to decode')
-        decodeInputLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;')
-        self.mainLayout.addWidget(decodeInputLabel)
+        self.decodeInputLabel = QLabel('Insert your data to decode')
+        self.decodeInputLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;')
+        self.mainLayout.addWidget(self.decodeInputLabel)
 
     def encodeInputLabel(self):
-        encodeInputLabel = QLabel('Insert your data to encode')
-        encodeInputLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;')  
-        self.mainLayout.addWidget(encodeInputLabel)
+        self.encodeInputLabel = QLabel('Insert your data to encode')
+        self.encodeInputLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;')  
+        self.mainLayout.addWidget(self.encodeInputLabel)
 
     def encodeSubmitButton(self):
-        encodeSubmitButton = QPushButton('Encode')
-        encodeSubmitButton.setMaximumWidth(200)
-        encodeSubmitButton.setStyleSheet('margin:6px 12px 24px 12px; font-weight: bold; font-size: 20px;')
-        self.mainLayout.addWidget(encodeSubmitButton)
+        self.encodeSubmitButton = QPushButton('Encode')
+        self.encodeSubmitButton.setMaximumWidth(200)
+        self.encodeSubmitButton.setStyleSheet('margin:6px 12px 24px 12px; font-weight: bold; font-size: 20px;')
+        self.encodeSubmitButton.clicked.connect(self.buttonClick)
+        self.mainLayout.addWidget(self.encodeSubmitButton)
 
     def decodeSubmitButton(self):
-        decodeSubmitButton = QPushButton('Decode')
-        decodeSubmitButton.setMaximumWidth(200)
-        decodeSubmitButton.setStyleSheet('margin:6px 12px 24px 12px; font-weight: bold; font-size: 20px;')
-        self.mainLayout.addWidget(decodeSubmitButton)
+        self.decodeSubmitButton = QPushButton('Decode')
+        self.decodeSubmitButton.setMaximumWidth(200)
+        self.decodeSubmitButton.setStyleSheet('margin:6px 12px 24px 12px; font-weight: bold; font-size: 20px;')
+        self.mainLayout.addWidget(self.decodeSubmitButton)
+
+    def buttonClick(self):
+        data = self.encodeInput.text()
+        data = encodeData(self.encodeInput.text(),'1001')
+        print(data)
