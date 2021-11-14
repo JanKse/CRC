@@ -49,4 +49,3 @@ def encodeData(data, key):
     # Append remainder in the original data
     codeword = data + remainder
     return codeword   
-print(encodeData('100010110101101001110','1001'))
