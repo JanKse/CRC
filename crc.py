@@ -1,5 +1,27 @@
+import sys
+from PyQt5 import QtWidgets, uic
+
+
+app = QtWidgets.QApplication(sys.argv)
+win = QtWidgets.QMainWindow()
+win.setGeometry(200,200,300, 300)
+win.setWindowTitle("ahoooj")
+label = QtWidgets.QLabel(win)
+label.setText("My faaa")
+label.move(50,50)
+win.show()
+sys.exit(app.exec_())
+
+   
+
+
+
+
+
+
+
+
 def stringXOR(a, b):
- 
     # initialize result
     result = ''
     # if bits are same, then stringXOR is 0, else 1
