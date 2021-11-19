@@ -1,7 +1,8 @@
 import sys
 
 import PyQt5
-from functions import encodeData
+from functions import encodeData, decodeData
+from binascii import hexlify
 from PyQt5.QtWidgets import QBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QWidget, QTextBrowser,QComboBox
 from PyQt5 import QtGui, QtCore
 
@@ -18,14 +19,13 @@ class Main(QWidget) :
 
         self.setFixedWidth(1200)
         
-        self.inputDropdown()
+    
         self.encodeInputLabel()
         self.encodeInput()
         self.encodeSubmitButton()
         self.decodeInputLabel()
         self.decodeInput()
         self.decodeSubmitButton()
-        self.outputDropdown()
         self.encodeOuput()
         self.decodeOuput()
         self.clearButton()
@@ -91,14 +91,9 @@ class Main(QWidget) :
         self.mainLayout.addWidget(self.decodeOutput)
 
     def encodeButtonClick(self):
-
-        if self.inputDropdown.currentText() == 'BIN':
-            input = self.encodeInput.text()
-        elif self.inputDropdown.currentText() == 'HEX' :
-            input = str(bin(int(self.encodeInput.text(), 16))[2:])
-
-        data = encodeData(input,'1001')
-        self.encodeOutput.setText('Encoded data : ' + data)
+        input = self.encodeInput.text()
+        self.encodedData = encodeData(input,'1001')
+        self.encodeOutput.setText('Encoded data : ' + self.encodedData)
         self.encodeOutput.setProperty('class', 'danger')
         
         
@@ -106,13 +101,16 @@ class Main(QWidget) :
 
     def decodeButtonClick(self):
 
-        if self.inputDropdown.currentText() == 'BIN':
-            input = self.encodeInput.text()
-        elif self.inputDropdown.currentText() == 'HEX' :
-            input = str(bin(int(self.encodeInput.text(), 16))[2:])
+     
+        input = self.decodeInput.text()
+   
+    
+        self.decodedData = decodeData(input,'1001')
 
-        data = encodeData(input,'1001')
-        self.decodeOutput.setText('Decoded data : ' + data)
+        if int(self.decodedData[0], 2) == 0:
+            self.decodeOutput.setText('Decoded data : ' + self.decodedData[1] + '\nNo error detection')
+        else:
+            self.decodeOutput.setText('Decoded data : ' + self.decodedData[1] + '\nError detection' + '\nRemainder : ' + self.decodedData[0])
 
 
     
@@ -123,59 +121,16 @@ class Main(QWidget) :
         self.encodeOutput.setText('Encoded data : ')
 
     
-    def inputDropdown(self):
-        self.inputDropdownLabel = QLabel('Input data format')
-        self.inputDropdownLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;' )
-        self.inputDropdown = QComboBox()
-        self.inputDropdown.addItems(['BIN', 'HEX','ASCII'])
-        self.inputDropdown.currentIndexChanged.connect(self.inputDropdownChanged)
-        self.inputDropdown.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;') 
-        self.inputDropdown.setMaximumWidth(200)
-        self.mainLayout.addWidget(self.inputDropdownLabel)
-        self.mainLayout.addWidget(self.inputDropdown)
     
-    def outputDropdown(self):
-        self.outputDropdownLabel = QLabel('Output data format')
-        self.outputDropdownLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;' )
-        self.outputDropdown = QComboBox()
-        self.outputDropdown.addItems(['BIN', 'HEX'])
-        self.outputDropdown.currentIndexChanged.connect(self.outputDropdownChanged)
-        self.outputDropdown.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;') 
-        self.outputDropdown.setMaximumWidth(200)
-        self.mainLayout.addWidget(self.outputDropdownLabel)
-        self.mainLayout.addWidget(self.outputDropdown)
 
     def inputValidation(self):
 
         self.binRegex = QtCore.QRegExp('^[0-1]{1,}$')
-        self.hexRegex = QtCore.QRegExp('[0-9a-fA-F]{1,}$')
-        
-        if self.inputDropdown.currentText() == 'BIN':
-            self.validator = QtGui.QRegExpValidator(self.binRegex)
-        elif self.inputDropdown.currentText() == 'HEX':
-            self.validator = QtGui.QRegExpValidator(self.hexRegex)
-
+        self.validator = QtGui.QRegExpValidator(self.binRegex)
+     
         self.encodeInput.setValidator(self.validator)
         self.decodeInput.setValidator(self.validator)
 
-    def inputDropdownChanged(self):
-        if self.inputDropdown.currentText() == 'BIN':
-            self.validator = QtGui.QRegExpValidator(self.binRegex)
-        elif self.inputDropdown.currentText() == 'HEX':
-             self.validator = QtGui.QRegExpValidator(self.hexRegex)
-       
+    
+    
         
-        self.encodeInput.clear()
-        self.encodeOutput.setText('Encoded data : ')
-        self.encodeInput.setValidator(self.validator)
-
-    def outputDropdownChanged(self):
-
-        if self.outputDropdown.currentText() == 'BIN':
-            self.validator = QtGui.QRegExpValidator(self.binRegex)
-        elif self.outputDropdown.currentText() == 'HEX':
-             self.validator = QtGui.QRegExpValidator(self.hexRegex)
-
-        self.decodeOutput.clear()
-        self.decodeOutput.setText('Decoded data : ')
-        self.decodeInput.setValidator(self.validator)
