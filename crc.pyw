@@ -1,4 +1,4 @@
-import sys
+
 from PyQt5 import QtWidgets 
 from GUI.Main import Main
 from qt_material import apply_stylesheet

@@ -1,8 +1,5 @@
-import sys
-
 
 from functions import encodeData, decodeData, cyclepoly
-
 from PyQt5.QtWidgets import QBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QWidget, QTextBrowser,QComboBox
 from PyQt5 import QtGui, QtCore
 
@@ -11,15 +8,8 @@ class Main(QWidget) :
     def __init__(self) :
         super().__init__()
         self.setWindowTitle("crc")
-        #self.setGeometry(200,200,300, 300)
-
-        
-
         self.mainLayout = QFormLayout()
-
         self.setFixedWidth(1200)
-        
-    
         self.codeInputLabel()
         self.codeInput()
         self.generateCRCButton()
@@ -37,7 +27,8 @@ class Main(QWidget) :
         self.inputValidation()
         self.setLayout(self.mainLayout)
         self.show()
-        
+
+####### Boring stuff regard to UI        
     def encodeInput(self):
         self.encodeInput = QLineEdit()
         self.encodeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px; border:0px; ')
@@ -53,7 +44,6 @@ class Main(QWidget) :
         self.codeInput = QLineEdit()
         self.codeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px; border:0px;')
         self.mainLayout.addWidget(self.codeInput)
-
 
     def decodeInputLabel(self):
         self.decodeInputLabel = QLabel('Insert your data to decode')
@@ -96,7 +86,6 @@ class Main(QWidget) :
         self.generateCRCButton.clicked.connect(self.generateCRCButtonClick)
         self.mainLayout.addWidget(self.generateCRCButton)
 
-
     def decodeSubmitButton(self):
         self.decodeSubmitButton = QPushButton('Decode')
         self.decodeSubmitButton.setMaximumWidth(200)
@@ -118,15 +107,14 @@ class Main(QWidget) :
         self.encodeOutput.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px; border: 0px;')
         self.mainLayout.addWidget(self.encodeOutput)
         
-
     def decodeOuput(self):
         self.decodeOutput = QTextBrowser()
         self.decodeOutput.setText('Decoded data : ')
         self.decodeOutput.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px; border: 0px;')
         self.mainLayout.addWidget(self.decodeOutput)
-
+################################################################################################################################
+####### Handling button click events     
     def encodeButtonClick(self):
-
         key = self.codeComboBox.currentText()
         if self.encodeInput.text() != '' :
             input = self.encodeInput.text()
@@ -136,9 +124,7 @@ class Main(QWidget) :
         else:
             self.encodeOutput.setText('Encoded data : ')
         
-        
     def decodeButtonClick(self):
-
         key = self.codeComboBox.currentText()
         if self.decodeInput.text() != '' :
             input = self.decodeInput.text()
@@ -149,7 +135,6 @@ class Main(QWidget) :
                 self.decodeOutput.setText('Decoded data : ' + self.decodedData[1] + '\nError detection' + '\nRemainder : ' + self.decodedData[0])
         else:
             self.encodeOutput.setText('Encoded data : ')
-
     
     def clearButtonClick(self):
         self.codeInput.clear()
@@ -159,8 +144,6 @@ class Main(QWidget) :
         self.encodeOutput.setText('Encoded data : ')
         self.decodeOutput.setText('Decoded data : ')
 
-
-    
     def generateCRCButtonClick(self):
         codes = []
         if self.codeInput.text() != '' :
@@ -170,15 +153,13 @@ class Main(QWidget) :
             self.codeComboBox.addItems(codes)
         else:
             self.codeComboBox.clear()
-        
 
+# Input validiation with regex      
     def inputValidation(self):
-
         self.codeRegex = QtCore.QRegExp('^\d+(,\d+)*$')
         self.binRegex = QtCore.QRegExp('^[0-1]{1,}$')
         self.validator = QtGui.QRegExpValidator(self.binRegex)
         self.codeValidator = QtGui.QRegExpValidator(self.codeRegex)
-
         self.codeInput.setValidator(self.codeValidator)
         self.encodeInput.setValidator(self.validator)
         self.decodeInput.setValidator(self.validator)

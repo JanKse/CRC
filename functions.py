@@ -1,6 +1,5 @@
-from numpy import divide, remainder, zeros, array, insert, mod, floor, power, arange, polydiv
-from numpy.core.arrayprint import array2string
-from numpy.lib.function_base import append
+from numpy import zeros, array, insert, mod, floor, power, arange
+
 
 def stringXOR(a, b):
     # initialize result
@@ -47,35 +46,26 @@ def encodeData(data, key):
     return codeword   
 
 def decodeData(data, key):
-
-    
     remainder = binDiv(data, key)
-    
     return remainder ,data[:len(data) - (len(key) -1)]
 
     #Convert decimal numbers to
     # binary numbers with Left-MSB orientation 
 def decToBin(d,n):
-
     result = mod(floor(d*power(2,arange(1-n,1.0))),2)
     return result
 
-
+#function for finding generator polynomial
+#inpired by matlab function cylcpoly from matlbam communication toolbox
 def cyclepoly(n,k):
-
-    
     genDegree = n-k
 
     nn = 2**(genDegree-1) -1 
-
     
     pp = array([1,1])
     pp = insert(pp, 1, zeros(n-1))
 
     strPp= ''.join(str(x) for x in pp)
-    
-    
-    
     
     tmp = []
     result=[]
@@ -87,9 +77,6 @@ def cyclepoly(n,k):
 
         if int(tmp[x],2) ==0 :
            result.append(strTest)
-        
-        
-        #print(rx)
     
     return result
    
