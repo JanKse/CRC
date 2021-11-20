@@ -1,8 +1,8 @@
 import sys
 
-import PyQt5
-from functions import encodeData, decodeData
-from binascii import hexlify
+
+from functions import encodeData, decodeData, cyclepoly
+
 from PyQt5.QtWidgets import QBoxLayout, QLabel, QLineEdit, QFormLayout, QPushButton, QWidget, QTextBrowser,QComboBox
 from PyQt5 import QtGui, QtCore
 
@@ -13,13 +13,18 @@ class Main(QWidget) :
         self.setWindowTitle("crc")
         #self.setGeometry(200,200,300, 300)
 
-        validator = QtGui.QRegExpValidator
+        
 
         self.mainLayout = QFormLayout()
 
         self.setFixedWidth(1200)
         
     
+        self.codeInputLabel()
+        self.codeInput()
+        self.generateCRCButton()
+        self.codeComboBoxLabel()
+        self.codeComboBox()
         self.encodeInputLabel()
         self.encodeInput()
         self.encodeSubmitButton()
@@ -43,7 +48,13 @@ class Main(QWidget) :
         self.decodeInput = QLineEdit()
         self.decodeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px; border:0px;')
         self.mainLayout.addWidget(self.decodeInput)
-    
+        
+    def codeInput(self):
+        self.codeInput = QLineEdit()
+        self.codeInput.setStyleSheet('font-weight: bold; font-size: 20px; padding:8px; margin:0px 12px 6px 12px; border:0px;')
+        self.mainLayout.addWidget(self.codeInput)
+
+
     def decodeInputLabel(self):
         self.decodeInputLabel = QLabel('Insert your data to decode')
         self.decodeInputLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;' )
@@ -54,6 +65,21 @@ class Main(QWidget) :
         self.encodeInputLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;')  
         self.mainLayout.addWidget(self.encodeInputLabel)
 
+    def codeInputLabel(self):
+        self.codeInputLabel = QLabel('Insert your code n,k ')
+        self.codeInputLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;')  
+        self.mainLayout.addWidget(self.codeInputLabel)
+    
+    def codeComboBoxLabel(self):
+        self.codeComboBoxLabel = QLabel('Choose your code')
+        self.codeComboBoxLabel.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 6px 12px;')  
+        self.mainLayout.addWidget(self.codeComboBoxLabel)
+    
+    def codeComboBox(self):
+        self.codeComboBox = QComboBox()
+        self.codeComboBox.setStyleSheet('font-weight: bold; font-size: 20px; margin:6px 0px 24px 12px;')  
+        self.mainLayout.addWidget(self.codeComboBox)
+
     def encodeSubmitButton(self):
         self.encodeSubmitButton = QPushButton('Encode')
         self.encodeSubmitButton.setMaximumWidth(200)
@@ -61,6 +87,15 @@ class Main(QWidget) :
         self.encodeSubmitButton.setProperty('class', 'danger')
         self.encodeSubmitButton.clicked.connect(self.encodeButtonClick)
         self.mainLayout.addWidget(self.encodeSubmitButton)
+    
+    def generateCRCButton(self):
+        self.generateCRCButton = QPushButton('Generate gen. pol.')
+        self.generateCRCButton.setMaximumWidth(400)
+        self.generateCRCButton.setStyleSheet('margin:6px 12px 0px 12px; font-weight: bold; font-size: 20px;')
+        self.generateCRCButton.setProperty('class', 'danger')
+        self.generateCRCButton.clicked.connect(self.generateCRCButtonClick)
+        self.mainLayout.addWidget(self.generateCRCButton)
+
 
     def decodeSubmitButton(self):
         self.decodeSubmitButton = QPushButton('Decode')
@@ -91,43 +126,60 @@ class Main(QWidget) :
         self.mainLayout.addWidget(self.decodeOutput)
 
     def encodeButtonClick(self):
-        input = self.encodeInput.text()
-        self.encodedData = encodeData(input,'1001')
-        self.encodeOutput.setText('Encoded data : ' + self.encodedData)
-        self.encodeOutput.setProperty('class', 'danger')
-        
-        
-        
 
+        key = self.codeComboBox.currentText()
+        if self.encodeInput.text() != '' :
+            input = self.encodeInput.text()
+            self.encodedData = encodeData(input,key)
+            self.encodeOutput.setText('Encoded data : ' + self.encodedData)
+            self.encodeOutput.setProperty('class', 'danger')
+        else:
+            self.encodeOutput.setText('Encoded data : ')
+        
+        
     def decodeButtonClick(self):
 
-     
-        input = self.decodeInput.text()
-   
-    
-        self.decodedData = decodeData(input,'1001')
-
-        if int(self.decodedData[0], 2) == 0:
-            self.decodeOutput.setText('Decoded data : ' + self.decodedData[1] + '\nNo error detection')
+        key = self.codeComboBox.currentText()
+        if self.decodeInput.text() != '' :
+            input = self.decodeInput.text()
+            self.decodedData = decodeData(input,key)
+            if int(self.decodedData[0], 2) == 0:
+                self.decodeOutput.setText('Decoded data : ' + self.decodedData[1] + '\nNo error detection')
+            else:
+                self.decodeOutput.setText('Decoded data : ' + self.decodedData[1] + '\nError detection' + '\nRemainder : ' + self.decodedData[0])
         else:
-            self.decodeOutput.setText('Decoded data : ' + self.decodedData[1] + '\nError detection' + '\nRemainder : ' + self.decodedData[0])
-
+            self.encodeOutput.setText('Encoded data : ')
 
     
     def clearButtonClick(self):
+        self.codeInput.clear()
+        self.codeComboBox.clear()
         self.encodeInput.clear()
         self.decodeInput.clear()
-        self.decodeOutput.setText('Decoded data : ')
         self.encodeOutput.setText('Encoded data : ')
+        self.decodeOutput.setText('Decoded data : ')
+
 
     
-    
+    def generateCRCButtonClick(self):
+        codes = []
+        if self.codeInput.text() != '' :
+            self.codeComboBox.clear()
+            param = self.codeInput.text().split(',')
+            codes = cyclepoly(int(param[0]), int(param[1]))
+            self.codeComboBox.addItems(codes)
+        else:
+            self.codeComboBox.clear()
+        
 
     def inputValidation(self):
 
+        self.codeRegex = QtCore.QRegExp('^\d+(,\d+)*$')
         self.binRegex = QtCore.QRegExp('^[0-1]{1,}$')
         self.validator = QtGui.QRegExpValidator(self.binRegex)
-     
+        self.codeValidator = QtGui.QRegExpValidator(self.codeRegex)
+
+        self.codeInput.setValidator(self.codeValidator)
         self.encodeInput.setValidator(self.validator)
         self.decodeInput.setValidator(self.validator)
 

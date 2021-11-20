@@ -8,7 +8,7 @@ from functions import *
 
 if __name__ == '__main__' :
     
-    cyclepoly(12,4)
+    
     
     app = QtWidgets.QApplication([])
     apply_stylesheet(app, theme='dark_teal.xml')

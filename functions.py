@@ -63,6 +63,7 @@ def decToBin(d,n):
 
 def cyclepoly(n,k):
 
+    
     genDegree = n-k
 
     nn = 2**(genDegree-1) -1 
@@ -74,7 +75,7 @@ def cyclepoly(n,k):
     strPp= ''.join(str(x) for x in pp)
     
     
-    print(strPp)
+    
     
     tmp = []
     result=[]
@@ -90,4 +91,5 @@ def cyclepoly(n,k):
         
         #print(rx)
     
-    print(result)
+    return result
+   
